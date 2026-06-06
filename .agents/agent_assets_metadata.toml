@@ -1,0 +1,14 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "wXh5ZDA_1sOWZjYC8ZR3x"
+uri = "file://saveur-restaurant.tar.gz"
+type = "unspecified"
+title = "Saveur Restaurant App — Updated with Order Tracking"
+
+[[outputs]]
+id = "B038-5CYN5k52Ql6h_u_s"
+uri = "file://DEPLOYMENT_GUIDE.md"
+type = "text"
+title = "Step-by-Step Deployment Guide"
