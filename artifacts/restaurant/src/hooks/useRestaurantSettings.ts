@@ -1,10 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  doc,
-  getDoc,
-  setDoc,
-  onSnapshot,
-} from "firebase/firestore";
+import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase";
 
 export interface RestaurantSettings {
@@ -14,25 +9,28 @@ export interface RestaurantSettings {
   zoom: number;
   phone: string;
   email: string;
-  hours: {
-    breakfast: string;
-    lunch: string;
-    dinner: string;
-  };
+  hours: { breakfast: string; lunch: string; dinner: string };
+  name: string;
+  tagline: string;
+  logoUrl: string;
+  heroImageUrl: string;
+  primaryColor: string;
 }
 
 const DEFAULTS: RestaurantSettings = {
   address: "123 Gourmet Lane, Food District, New York, NY 10001",
-  lat: 40.7580,
+  lat: 40.758,
   lng: -73.9855,
   zoom: 16,
   phone: "+1 (555) 234-5678",
   email: "hello@saveur.restaurant",
-  hours: {
-    breakfast: "7am – 11am",
-    lunch: "12pm – 3pm",
-    dinner: "6pm – 11pm",
-  },
+  hours: { breakfast: "7am – 11am", lunch: "12pm – 3pm", dinner: "6pm – 11pm" },
+  name: "Saveur",
+  tagline: "Crafted with passion, served with pride",
+  logoUrl: "",
+  heroImageUrl:
+    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&q=80",
+  primaryColor: "#D4A853",
 };
 
 export function useRestaurantSettings() {
