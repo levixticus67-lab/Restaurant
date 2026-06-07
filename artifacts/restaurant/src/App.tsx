@@ -13,30 +13,31 @@ import OrderTracking from "@/pages/OrderTracking";
 import Reservations from "@/pages/Reservations";
 import GiftCards from "@/pages/GiftCards";
 import Loyalty from "@/pages/Loyalty";
-import MealBuilder from "@/pages/MealBuilder";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
 function Router() {
   return (
-    <>
+    <div className="min-h-screen" style={{ background: "#0d0d0d" }}>
       <Navbar />
       <Cart />
       <ConfigBanner />
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/menu" component={Menu} />
-        <Route path="/track" component={OrderTracking} />
-        <Route path="/login" component={Login} />
-        <Route path="/admin" component={Admin} />
-        <Route path="/reservations" component={Reservations} />
-        <Route path="/gift-cards" component={GiftCards} />
-        <Route path="/loyalty" component={Loyalty} />
-        <Route path="/builder" component={MealBuilder} />
-        <Route component={NotFound} />
-      </Switch>
-    </>
+      {/* md:ml-[260px] offsets the fixed sidebar on desktop; pb-16 clears mobile bottom nav */}
+      <main className="md:ml-[260px] pb-16 md:pb-0">
+        <Switch>
+          <Route path="/" component={Home} />
+          <Route path="/menu" component={Menu} />
+          <Route path="/track" component={OrderTracking} />
+          <Route path="/login" component={Login} />
+          <Route path="/admin" component={Admin} />
+          <Route path="/reservations" component={Reservations} />
+          <Route path="/gift-cards" component={GiftCards} />
+          <Route path="/loyalty" component={Loyalty} />
+          <Route component={NotFound} />
+        </Switch>
+      </main>
+    </div>
   );
 }
 
