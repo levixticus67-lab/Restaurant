@@ -23,7 +23,6 @@ function Router() {
       <Navbar />
       <Cart />
       <ConfigBanner />
-      {/* md:ml-[260px] offsets the fixed sidebar on desktop; pb-16 clears mobile bottom nav */}
       <main className="md:ml-[260px] pb-16 md:pb-0">
         <Switch>
           <Route path="/" component={Home} />

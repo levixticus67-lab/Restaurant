@@ -47,48 +47,39 @@ export default function Menu() {
   return (
     <div className="min-h-screen px-4 md:px-8 pt-6 pb-8" style={{ background: "#0d0d0d" }}>
 
-      {/* Page title */}
       <div className="mb-6">
         <h1 className="text-2xl font-extrabold text-white">Our Menu</h1>
-        <p className="text-white/40 text-sm mt-0.5">{meals.filter(m => m.isAvailable).length} items available</p>
+        <p className="text-white/35 text-sm mt-0.5">{meals.filter(m => m.isAvailable).length} items available</p>
       </div>
 
-      {/* Search bar */}
+      {/* Search */}
       <div className="relative mb-5">
-        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search meals, ingredients..."
+        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/25" />
+        <input value={search} onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search meals, ingredients…"
           className="w-full pl-10 pr-10 py-3.5 rounded-2xl text-white text-sm outline-none"
-          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.09)" }}
-        />
+          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.09)" }} />
         {search && (
-          <button onClick={() => setSearch("")}
-            className="absolute right-4 top-1/2 -translate-y-1/2">
-            <X size={14} className="text-white/40" />
+          <button onClick={() => setSearch("")} className="absolute right-4 top-1/2 -translate-y-1/2">
+            <X size={14} className="text-white/35" />
           </button>
         )}
       </div>
 
-      {/* Category icons */}
+      {/* Category pills */}
       <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1 mb-6">
         {CATEGORIES.map(({ id, emoji }) => {
           const active = category === id;
           return (
-            <motion.button
-              key={id}
-              whileTap={{ scale: 0.93 }}
-              onClick={() => setCategory(id)}
-              className="shrink-0 flex flex-col items-center gap-1.5 px-4 py-2.5 rounded-2xl transition-all"
+            <motion.button key={id} whileTap={{ scale: 0.93 }} onClick={() => setCategory(id)}
+              className="shrink-0 flex flex-col items-center gap-1.5 px-4 py-2.5 rounded-2xl"
               style={{
                 background: active ? `${accent}18` : "rgba(255,255,255,0.04)",
                 border: `1px solid ${active ? accent + "50" : "rgba(255,255,255,0.07)"}`,
-              }}
-            >
+              }}>
               <span className="text-xl leading-none">{emoji}</span>
               <span className="text-xs font-medium whitespace-nowrap"
-                style={{ color: active ? accent : "rgba(255,255,255,0.45)" }}>
+                style={{ color: active ? accent : "rgba(255,255,255,0.40)" }}>
                 {id}
               </span>
             </motion.button>
@@ -100,13 +91,14 @@ export default function Menu() {
       {loading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="rounded-2xl animate-pulse" style={{ height: 260, background: "rgba(255,255,255,0.05)" }} />
+            <div key={i} className="rounded-2xl animate-pulse"
+              style={{ height: 260, background: "rgba(255,255,255,0.05)" }} />
           ))}
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 gap-4">
           <span className="text-5xl">🍽️</span>
-          <p className="text-white/40 text-sm">No meals found</p>
+          <p className="text-white/35 text-sm">No meals found</p>
           <button onClick={() => { setSearch(""); setCategory("All"); }}
             className="px-5 py-2.5 rounded-xl text-sm font-semibold"
             style={{ background: `${accent}18`, color: accent, border: `1px solid ${accent}30` }}>
@@ -117,14 +109,9 @@ export default function Menu() {
         <AnimatePresence mode="popLayout">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filtered.map((meal, i) => (
-              <motion.div
-                key={meal.id}
-                layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ delay: i * 0.04 }}
-              >
+              <motion.div key={meal.id} layout
+                initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }} transition={{ delay: i * 0.04 }}>
                 <MealCard meal={meal} onOpen={setSelected} />
               </motion.div>
             ))}

@@ -28,8 +28,7 @@ const DEFAULTS: RestaurantSettings = {
   name: "Saveur",
   tagline: "Crafted with passion, served with pride",
   logoUrl: "",
-  heroImageUrl:
-    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&q=80",
+  heroImageUrl: "",
   primaryColor: "#D4A853",
 };
 
