@@ -1,219 +1,243 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-import { ArrowRight, Star, Clock, Award, ChefHat, CalendarDays, Gift } from "lucide-react";
-import AnimatedDots from "@/components/AnimatedDots";
-import RotatingProducts from "@/components/RotatingProducts";
+import { Star, Clock, Award, ChefHat, ArrowRight, MapPin, Phone } from "lucide-react";
+import MealCard from "@/components/MealCard";
 import MealModal from "@/components/MealModal";
-import MapSection from "@/components/MapSection";
-import MoodSelector from "@/components/MoodSelector";
-import SocialProofFeed from "@/components/SocialProofFeed";
-import ReservationFloorplan from "@/components/ReservationFloorplan";
 import { useMenu } from "@/hooks/useMenu";
-import { Meal, MoodType } from "@/types";
-import { MOODS } from "@/components/MoodSelector";
+import { useRestaurantSettings } from "@/hooks/useRestaurantSettings";
+import { Meal } from "@/types";
 
 const STATS = [
   { icon: Star,    value: "4.9",  label: "Rating" },
-  { icon: Clock,   value: "25min", label: "Avg Delivery" },
+  { icon: Clock,   value: "25m",  label: "Delivery" },
   { icon: Award,   value: "15+",  label: "Awards" },
-  { icon: ChefHat, value: "50+",  label: "Menu Items" },
+  { icon: ChefHat, value: "50+",  label: "Items" },
 ];
 
 export default function Home() {
   const { meals } = useMenu();
+  const { settings } = useRestaurantSettings();
   const [selected, setSelected] = useState<Meal | null>(null);
-  const [mood, setMood] = useState<MoodType | null>(null);
-  const [reserveOpen, setReserveOpen] = useState(false);
 
-  const moodMeals = mood
-    ? meals.filter((m) => {
-        const moodObj = MOODS.find((mo) => mo.id === mood);
-        if (!moodObj) return true;
-        return (
-          m.tags?.some((t) => moodObj.tags.includes(t.toLowerCase())) ||
-          m.isFeatured ||
-          m.isAvailable
-        );
-      })
-    : meals;
+  const featured = meals.filter((m) => m.isAvailable && m.isFeatured).slice(0, 8);
+  const popular  = meals.filter((m) => m.isAvailable && !m.isFeatured).slice(0, 6);
 
-  const featuredMeals = moodMeals.filter((m) => m.isAvailable).slice(0, 8);
+  const accent = settings.primaryColor || "#D4A853";
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden" style={{ background: "#080f1c" }}>
-      <AnimatedDots />
-      <SocialProofFeed meals={meals} />
-      <ReservationFloorplan isOpen={reserveOpen} onClose={() => setReserveOpen(false)} />
+    <div className="min-h-screen" style={{ background: "#0d0d0d" }}>
 
-      {/* Hero */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 pt-20 pb-12">
-        <div className="relative z-10 max-w-5xl mx-auto w-full text-center mb-12">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-6"
-            style={{ background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)", color: "#a78bfa" }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
-            Now Open · Dine In &amp; Takeaway
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-5xl sm:text-7xl font-extrabold text-white mb-6 leading-tight"
-          >
-            Crafted with{" "}
-            <span className="bg-clip-text text-transparent"
-              style={{ backgroundImage: "linear-gradient(135deg, #f59e0b, #ef4444, #8b5cf6)" }}>
-              Passion
-            </span>
-            <br />
-            Served with Pride
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-white/50 text-lg mb-10 max-w-xl mx-auto"
-          >
-            Fine dining flavours at your doorstep. Farm-to-table ingredients, bold recipes, unforgettable taste.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="flex flex-wrap items-center justify-center gap-4"
-          >
-            <Link href="/menu">
-              <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
-                className="flex items-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-white"
-                style={{ background: "linear-gradient(135deg, #3b82f6, #8b5cf6)", boxShadow: "0 12px 40px rgba(139,92,246,0.35)" }}>
-                Explore Menu
-                <ArrowRight size={18} />
-              </motion.button>
-            </Link>
-            <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
-              onClick={() => setReserveOpen(true)}
-              className="flex items-center gap-2 px-8 py-3.5 rounded-2xl font-semibold"
-              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.8)" }}>
-              <CalendarDays size={16} />
-              Book a Table
-            </motion.button>
-          </motion.div>
-
-          {/* Quick action chips */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="flex flex-wrap items-center justify-center gap-2 mt-6"
-          >
-            <Link href="/gift-cards">
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-all"
-                style={{ background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.2)", color: "#a78bfa" }}>
-                <Gift size={11} /> Gift Cards
-              </span>
-            </Link>
-            <Link href="/loyalty">
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-all"
-                style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)", color: "#f59e0b" }}>
-                ⭐ Loyalty Rewards
-              </span>
-            </Link>
-            <Link href="/track">
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-all"
-                style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.2)", color: "#34d399" }}>
-                📦 Track Order
-              </span>
-            </Link>
-          </motion.div>
+      {/* ─── HERO ─── */}
+      <section className="relative overflow-hidden" style={{ minHeight: "92vh" }}>
+        {/* Background image */}
+        <div className="absolute inset-0">
+          <img
+            src={settings.heroImageUrl || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&q=80"}
+            alt="Hero"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0" style={{
+            background: "linear-gradient(to bottom, rgba(13,13,13,0.55) 0%, rgba(13,13,13,0.82) 60%, #0d0d0d 100%)",
+          }} />
         </div>
 
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="relative z-10 w-full max-w-2xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 mb-16"
-        >
-          {STATS.map(({ icon: Icon, value, label }) => (
-            <div key={label} className="flex flex-col items-center gap-1.5 py-4 rounded-2xl"
-              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(8px)" }}>
-              <Icon size={20} style={{ color: "#8b5cf6" }} />
-              <span className="text-white font-extrabold text-xl">{value}</span>
-              <span className="text-white/40 text-xs">{label}</span>
+        {/* Content */}
+        <div className="relative z-10 flex flex-col justify-end h-full px-5 md:px-12 pb-16 pt-24"
+          style={{ minHeight: "92vh" }}>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-4"
+              style={{ color: accent }}>
+              ✦ Premium Dining
+            </span>
+
+            <h1 className="text-5xl md:text-7xl font-black text-white leading-[1.05] mb-3">
+              {settings.name}
+            </h1>
+            <p className="text-white/60 text-lg md:text-xl mb-8 max-w-lg">
+              {settings.tagline}
+            </p>
+
+            {/* Stats row */}
+            <div className="flex flex-wrap gap-4 mb-10">
+              {STATS.map(({ icon: Icon, value, label }) => (
+                <div key={label} className="flex items-center gap-2 px-4 py-2.5 rounded-2xl"
+                  style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                  <Icon size={14} style={{ color: accent }} />
+                  <span className="text-white font-bold text-sm">{value}</span>
+                  <span className="text-white/40 text-xs">{label}</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </motion.div>
 
-        {/* Mood selector */}
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}
-          className="relative z-10 w-full max-w-2xl mx-auto mb-10">
-          <MoodSelector selected={mood} onSelect={setMood} />
-        </motion.div>
-
-        {/* Rotating Products */}
-        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-          className="relative z-10 w-full max-w-2xl mx-auto" style={{ minHeight: 400 }}>
-          <p className="text-center text-white/30 text-xs uppercase tracking-widest font-semibold mb-4">
-            {mood ? `${MOODS.find((m) => m.id === mood)?.label} Picks` : "Featured Tonight"}
-          </p>
-          <RotatingProducts meals={featuredMeals.length > 0 ? featuredMeals : meals} onOpen={setSelected} />
-        </motion.div>
+            {/* CTA buttons */}
+            <div className="flex flex-wrap gap-3">
+              <Link href="/menu">
+                <motion.button whileTap={{ scale: 0.96 }}
+                  className="flex items-center gap-2 px-7 py-3.5 rounded-2xl font-bold text-sm"
+                  style={{ background: accent, color: "#0d0d0d" }}>
+                  View Menu
+                  <ArrowRight size={16} />
+                </motion.button>
+              </Link>
+              <Link href="/reservations">
+                <motion.button whileTap={{ scale: 0.96 }}
+                  className="flex items-center gap-2 px-7 py-3.5 rounded-2xl font-semibold text-sm"
+                  style={{ background: "rgba(255,255,255,0.08)", color: "white", border: "1px solid rgba(255,255,255,0.15)" }}>
+                  Reserve a Table
+                </motion.button>
+              </Link>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
-      {/* About */}
-      <section id="about" className="relative z-10 py-24 px-4" style={{ background: "rgba(255,255,255,0.02)" }}>
-        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <p className="text-sm font-semibold mb-3" style={{ color: "#8b5cf6" }}>Our Story</p>
-            <h2 className="text-4xl font-extrabold text-white mb-6 leading-tight">
-              Where Every Dish Tells a Story
-            </h2>
-            <p className="text-white/50 text-base leading-relaxed mb-6">
-              Founded by Chef Marco Rivera in 2018, Saveur was born from a passion for
-              elevating everyday ingredients into extraordinary experiences. We partner
-              with local farmers to bring you the freshest produce, sustainably sourced
-              proteins, and flavours that transport you around the world — all from one table.
-            </p>
-            <p className="text-white/50 text-base leading-relaxed">
-              From our wood-fired grill to our handmade pasta station, every technique
-              is intentional, every garnish purposeful. Come hungry. Leave inspired.
-            </p>
-            <div className="flex gap-3 mt-6">
-              <motion.button whileTap={{ scale: 0.97 }} onClick={() => setReserveOpen(true)}
-                className="flex items-center gap-2 px-6 py-3 rounded-2xl font-semibold text-white text-sm"
-                style={{ background: "linear-gradient(135deg, #3b82f6, #8b5cf6)" }}>
-                <CalendarDays size={14} />
-                Reserve a Table
-              </motion.button>
+      {/* ─── ORDER TYPE STRIP ─── */}
+      <section className="px-5 md:px-12 py-6">
+        <div className="flex gap-3 overflow-x-auto scrollbar-none">
+          {[
+            { label: "Dine In",   icon: "🍽️", desc: "Reserve a table" },
+            { label: "Takeaway",  icon: "🥡", desc: "Pick up your order" },
+            { label: "Delivery",  icon: "🛵", desc: "Delivered to you" },
+          ].map((type) => (
+            <Link href="/menu" key={type.label}>
+              <div className="shrink-0 flex items-center gap-3 px-5 py-4 rounded-2xl cursor-pointer transition-all hover:border-amber-500/40"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", minWidth: 160 }}>
+                <span className="text-2xl">{type.icon}</span>
+                <div>
+                  <p className="text-white font-semibold text-sm">{type.label}</p>
+                  <p className="text-white/35 text-xs">{type.desc}</p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── FEATURED MEALS ─── */}
+      {featured.length > 0 && (
+        <section className="px-5 md:px-12 pb-10">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h2 className="text-white text-xl font-extrabold">Chef's Picks</h2>
+              <p className="text-white/35 text-xs mt-0.5">Handpicked by our kitchen</p>
             </div>
+            <Link href="/menu">
+              <span className="text-xs font-semibold flex items-center gap-1" style={{ color: accent }}>
+                See all <ArrowRight size={12} />
+              </span>
+            </Link>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80",
-              "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=400&q=80",
-              "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80",
-              "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=400&q=80",
-            ].map((src, i) => (
-              <motion.img key={i} whileHover={{ scale: 1.04 }} src={src} alt=""
-                className={`w-full object-cover rounded-2xl ${i === 1 ? "mt-8" : i === 3 ? "-mt-8" : ""}`}
-                style={{ height: 160 }} />
+
+          {/* Horizontal scroll on mobile, grid on desktop */}
+          <div className="md:hidden flex gap-3 overflow-x-auto scrollbar-none pb-2">
+            {featured.map((meal, i) => (
+              <motion.div
+                key={meal.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.07 }}
+                className="shrink-0"
+                style={{ width: 200 }}
+              >
+                <MealCard meal={meal} onOpen={setSelected} />
+              </motion.div>
             ))}
           </div>
+
+          <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 gap-4">
+            {featured.map((meal, i) => (
+              <motion.div
+                key={meal.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.06 }}
+              >
+                <MealCard meal={meal} onOpen={setSelected} />
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ─── POPULAR ITEMS ─── */}
+      {popular.length > 0 && (
+        <section className="px-5 md:px-12 pb-10">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h2 className="text-white text-xl font-extrabold">Popular Right Now</h2>
+              <p className="text-white/35 text-xs mt-0.5">Customer favourites</p>
+            </div>
+            <Link href="/menu">
+              <span className="text-xs font-semibold flex items-center gap-1" style={{ color: accent }}>
+                View all <ArrowRight size={12} />
+              </span>
+            </Link>
+          </div>
+
+          <div className="md:hidden flex gap-3 overflow-x-auto scrollbar-none pb-2">
+            {popular.map((meal, i) => (
+              <motion.div key={meal.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.07 }} className="shrink-0" style={{ width: 200 }}>
+                <MealCard meal={meal} onOpen={setSelected} />
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 gap-4">
+            {popular.map((meal, i) => (
+              <motion.div key={meal.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.06 }}>
+                <MealCard meal={meal} onOpen={setSelected} />
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ─── ABOUT / INFO STRIP ─── */}
+      <section className="mx-5 md:mx-12 mb-10 rounded-3xl overflow-hidden"
+        style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+        <div className="p-6 md:p-8 grid md:grid-cols-3 gap-6">
+          <div>
+            <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: accent }}>
+              Hours
+            </p>
+            <div className="space-y-1 text-sm">
+              <p className="text-white/60">Breakfast: <span className="text-white">{settings.hours.breakfast}</span></p>
+              <p className="text-white/60">Lunch: <span className="text-white">{settings.hours.lunch}</span></p>
+              <p className="text-white/60">Dinner: <span className="text-white">{settings.hours.dinner}</span></p>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: accent }}>
+              Location
+            </p>
+            <div className="flex items-start gap-2">
+              <MapPin size={14} className="text-white/40 mt-0.5 shrink-0" />
+              <p className="text-white/70 text-sm">{settings.address}</p>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: accent }}>
+              Contact
+            </p>
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <Phone size={13} className="text-white/40" />
+                <p className="text-white/70 text-sm">{settings.phone}</p>
+              </div>
+              <p className="text-white/40 text-sm">{settings.email}</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Map & Contact */}
-      <MapSection />
-
-      <MealModal meal={selected} onClose={() => setSelected(null)} />
+      {selected && <MealModal meal={selected} onClose={() => setSelected(null)} />}
     </div>
   );
 }
