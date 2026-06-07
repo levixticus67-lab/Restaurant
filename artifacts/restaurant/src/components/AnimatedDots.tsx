@@ -10,6 +10,7 @@ interface Dot {
   color: string;
   pulse: number;
   pulseSpeed: number;
+  layer: number;
 }
 
 const COLORS = [
@@ -22,6 +23,7 @@ const COLORS = [
 
 export default function AnimatedDots() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mouseRef = useRef({ x: -1000, y: -1000 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -39,10 +41,16 @@ export default function AnimatedDots() {
     resize();
     window.addEventListener("resize", resize);
 
-    for (let i = 0; i < 80; i++) {
+    const onMouseMove = (e: MouseEvent) => {
+      mouseRef.current = { x: e.clientX, y: e.clientY };
+    };
+    window.addEventListener("mousemove", onMouseMove);
+
+    for (let i = 0; i < 90; i++) {
+      const layer = Math.random() < 0.33 ? 0 : Math.random() < 0.5 ? 1 : 2;
       dots.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
         vx: (Math.random() - 0.5) * 0.4,
         vy: (Math.random() - 0.5) * 0.4,
         radius: Math.random() * 3 + 1,
@@ -50,13 +58,20 @@ export default function AnimatedDots() {
         color: COLORS[Math.floor(Math.random() * COLORS.length)],
         pulse: Math.random() * Math.PI * 2,
         pulseSpeed: Math.random() * 0.02 + 0.01,
+        layer,
       });
     }
 
     const draw = () => {
+      const { x: mx, y: my } = mouseRef.current;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       dots.forEach((dot) => {
+        const parallaxFactor = dot.layer === 0 ? 0.04 : dot.layer === 1 ? 0.02 : 0.008;
+        const targetX = dot.x + (mx - canvas.width / 2) * parallaxFactor;
+        const targetY = dot.y + (my - canvas.height / 2) * parallaxFactor;
+
         dot.x += dot.vx;
         dot.y += dot.vy;
         dot.pulse += dot.pulseSpeed;
@@ -69,30 +84,34 @@ export default function AnimatedDots() {
         const pulsedOpacity = dot.opacity * (0.6 + 0.4 * Math.sin(dot.pulse));
         const pulsedRadius = dot.radius * (0.8 + 0.2 * Math.sin(dot.pulse));
 
-        const grad = ctx.createRadialGradient(dot.x, dot.y, 0, dot.x, dot.y, pulsedRadius * 3);
+        const grad = ctx.createRadialGradient(targetX, targetY, 0, targetX, targetY, pulsedRadius * 3);
         grad.addColorStop(0, `rgba(${dot.color}, ${pulsedOpacity})`);
         grad.addColorStop(1, `rgba(${dot.color}, 0)`);
 
         ctx.beginPath();
-        ctx.arc(dot.x, dot.y, pulsedRadius * 3, 0, Math.PI * 2);
+        ctx.arc(targetX, targetY, pulsedRadius * 3, 0, Math.PI * 2);
         ctx.fillStyle = grad;
         ctx.fill();
 
         ctx.beginPath();
-        ctx.arc(dot.x, dot.y, pulsedRadius, 0, Math.PI * 2);
+        ctx.arc(targetX, targetY, pulsedRadius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${dot.color}, ${Math.min(pulsedOpacity * 2, 1)})`;
         ctx.fill();
       });
 
       dots.forEach((a, i) => {
-        dots.slice(i + 1).forEach((b) => {
-          const dx = a.x - b.x;
-          const dy = a.y - b.y;
+        const aX = a.x + (mouseRef.current.x - canvas.width / 2) * (a.layer === 0 ? 0.04 : a.layer === 1 ? 0.02 : 0.008);
+        const aY = a.y + (mouseRef.current.y - canvas.height / 2) * (a.layer === 0 ? 0.04 : a.layer === 1 ? 0.02 : 0.008);
+        dots.slice(i + 1, i + 12).forEach((b) => {
+          const bX = b.x + (mouseRef.current.x - canvas.width / 2) * (b.layer === 0 ? 0.04 : b.layer === 1 ? 0.02 : 0.008);
+          const bY = b.y + (mouseRef.current.y - canvas.height / 2) * (b.layer === 0 ? 0.04 : b.layer === 1 ? 0.02 : 0.008);
+          const dx = aX - bX;
+          const dy = aY - bY;
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < 120) {
             ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
+            ctx.moveTo(aX, aY);
+            ctx.lineTo(bX, bY);
             ctx.strokeStyle = `rgba(139, 92, 246, ${0.08 * (1 - dist / 120)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
@@ -108,6 +127,7 @@ export default function AnimatedDots() {
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", onMouseMove);
     };
   }, []);
 

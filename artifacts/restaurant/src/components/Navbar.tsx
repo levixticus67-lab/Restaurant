@@ -8,9 +8,10 @@ import { useAuth } from "@/contexts/AuthContext";
 const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Menu", href: "/menu" },
+  { label: "Reserve", href: "/reservations" },
   { label: "Track Order", href: "/track" },
+  { label: "Gift Cards", href: "/gift-cards" },
   { label: "About", href: "/#about" },
-  { label: "Contact", href: "/#contact" },
 ];
 
 export default function Navbar() {
@@ -36,7 +37,7 @@ export default function Navbar() {
           <span>Saveur</span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6">
           {NAV_LINKS.map((l) => (
             <Link key={l.href} href={l.href}>
               <span
@@ -108,6 +109,11 @@ export default function Navbar() {
               </span>
             </Link>
           )}
+          <Link href="/loyalty">
+            <span className="block py-2 text-sm font-medium" style={{ color: "#a78bfa" }} onClick={() => setMobileOpen(false)}>
+              ⭐ My Loyalty Card
+            </span>
+          </Link>
         </motion.div>
       )}
     </header>

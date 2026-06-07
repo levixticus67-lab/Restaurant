@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShoppingCart, Flame, Clock } from "lucide-react";
 import { Meal } from "@/types";
 import { useCart } from "@/contexts/CartContext";
 
@@ -9,19 +9,66 @@ interface Props {
   onOpen: (meal: Meal) => void;
 }
 
+function useCountdown(expiresAt: number | undefined) {
+  const [remaining, setRemaining] = useState(0);
+  useEffect(() => {
+    if (!expiresAt) return;
+    const update = () => setRemaining(Math.max(0, expiresAt - Date.now()));
+    update();
+    const id = setInterval(update, 1000);
+    return () => clearInterval(id);
+  }, [expiresAt]);
+  return remaining;
+}
+
+function formatCountdown(ms: number) {
+  const totalSecs = Math.floor(ms / 1000);
+  const h = Math.floor(totalSecs / 3600);
+  const m = Math.floor((totalSecs % 3600) / 60);
+  const s = totalSecs % 60;
+  if (h > 0) return `${h}h ${m}m left`;
+  return `${m}:${String(s).padStart(2, "0")} left`;
+}
+
+function SpecialBadge({ meal }: { meal: Meal }) {
+  const remaining = useCountdown(meal.expiresAt);
+  const isUrgent = meal.expiresAt ? remaining < 10 * 60 * 1000 && remaining > 0 : false;
+
+  if (!meal.isChefSpecial) return null;
+
+  return (
+    <div
+      className={`absolute top-4 left-4 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${isUrgent ? "animate-pulse" : ""}`}
+      style={{
+        background: isUrgent ? "rgba(239,68,68,0.9)" : "rgba(245,158,11,0.9)",
+        color: "#0d1b2a",
+      }}
+    >
+      <Flame size={11} fill="currentColor" />
+      Today's Special
+      {meal.expiresAt && remaining > 0 && (
+        <span className="ml-1 flex items-center gap-1">
+          <Clock size={10} />
+          {formatCountdown(remaining)}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export default function RotatingProducts({ meals, onOpen }: Props) {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const { addItem } = useCart();
 
-  const featured = meals.filter((m) => m.isFeatured || m.isAvailable).slice(0, 6);
+  const featured = meals.filter((m) => m.isFeatured || m.isChefSpecial || m.isAvailable).slice(0, 8);
 
   useEffect(() => {
     if (featured.length === 0) return;
     const timer = setInterval(() => {
       setDirection(1);
       setCurrent((c) => (c + 1) % featured.length);
-    }, 4000);
+    }, 5000);
     return () => clearInterval(timer);
   }, [featured.length]);
 
@@ -71,6 +118,9 @@ export default function RotatingProducts({ meals, onOpen }: Props) {
                 background: "linear-gradient(135deg, rgba(13,27,42,0.85) 0%, rgba(13,27,42,0.2) 50%, transparent 100%)",
               }}
             />
+
+            <SpecialBadge meal={meal} />
+
             <div className="absolute bottom-0 left-0 right-0 p-8">
               <div className="flex items-end justify-between">
                 <div>
@@ -105,18 +155,14 @@ export default function RotatingProducts({ meals, onOpen }: Props) {
         </AnimatePresence>
       </div>
 
-      <button
-        onClick={prev}
+      <button onClick={prev}
         className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full transition-all z-10"
-        style={{ background: "rgba(255,255,255,0.12)", backdropFilter: "blur(8px)" }}
-      >
+        style={{ background: "rgba(255,255,255,0.12)", backdropFilter: "blur(8px)" }}>
         <ChevronLeft size={20} className="text-white" />
       </button>
-      <button
-        onClick={next}
+      <button onClick={next}
         className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full transition-all z-10"
-        style={{ background: "rgba(255,255,255,0.12)", backdropFilter: "blur(8px)" }}
-      >
+        style={{ background: "rgba(255,255,255,0.12)", backdropFilter: "blur(8px)" }}>
         <ChevronRight size={20} className="text-white" />
       </button>
 

@@ -10,6 +10,10 @@ import Menu from "@/pages/Menu";
 import Login from "@/pages/Login";
 import Admin from "@/pages/Admin";
 import OrderTracking from "@/pages/OrderTracking";
+import Reservations from "@/pages/Reservations";
+import GiftCards from "@/pages/GiftCards";
+import Loyalty from "@/pages/Loyalty";
+import MealBuilder from "@/pages/MealBuilder";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +30,10 @@ function Router() {
         <Route path="/track" component={OrderTracking} />
         <Route path="/login" component={Login} />
         <Route path="/admin" component={Admin} />
+        <Route path="/reservations" component={Reservations} />
+        <Route path="/gift-cards" component={GiftCards} />
+        <Route path="/loyalty" component={Loyalty} />
+        <Route path="/builder" component={MealBuilder} />
         <Route component={NotFound} />
       </Switch>
     </>
