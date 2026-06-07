@@ -93,7 +93,7 @@ export default function GiftCards() {
                   setGiftCard({ id: card.id, code: card.code, discount: card.balance });
                 }}
                 onRemove={() => { setRedeemCard(null); setGiftCard(null); }}
-                appliedCard={redeemCard}
+                appliedCard={redeemCard ? { id: redeemCard.id, code: redeemCard.code, discount: redeemCard.balance } : null}
                 orderTotal={9999}
               />
             </div>
