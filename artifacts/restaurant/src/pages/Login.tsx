@@ -3,8 +3,6 @@ import { motion } from "framer-motion";
 import { UtensilsCrossed, Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "wouter";
-import AnimatedDots from "@/components/AnimatedDots";
-
 export default function Login() {
   const { signIn, isConfigured } = useAuth();
   const [, navigate] = useLocation();
@@ -33,10 +31,8 @@ export default function Login() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4"
-      style={{ background: "#080f1c" }}>
-      <AnimatedDots />
-
+    <div className="min-h-screen flex items-center justify-center px-4"
+      style={{ background: "#0d0d0d" }}>
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}

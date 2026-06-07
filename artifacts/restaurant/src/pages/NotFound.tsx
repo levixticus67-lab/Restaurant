@@ -1,12 +1,9 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import AnimatedDots from "@/components/AnimatedDots";
-
 export default function NotFound() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center"
-      style={{ background: "#080f1c" }}>
-      <AnimatedDots />
+    <div className="min-h-screen flex items-center justify-center"
+      style={{ background: "#0d0d0d" }}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

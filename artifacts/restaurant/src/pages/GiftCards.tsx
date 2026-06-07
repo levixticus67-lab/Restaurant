@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { Gift, Heart, Star, Send } from "lucide-react";
-import AnimatedDots from "@/components/AnimatedDots";
 import { IssueGiftCard, RedeemGiftCard } from "@/components/GiftCardWidget";
 import { useState } from "react";
 import { GiftCard } from "@/types";
@@ -19,10 +18,8 @@ export default function GiftCards() {
   const [redeemCard, setRedeemCard] = useState<GiftCard | null>(null);
 
   return (
-    <div className="relative min-h-screen" style={{ background: "#080f1c" }}>
-      <AnimatedDots />
-
-      <div className="relative z-10 max-w-2xl mx-auto px-4 pt-28 pb-20">
+    <div className="min-h-screen" style={{ background: "#0d0d0d" }}>
+      <div className="max-w-2xl mx-auto px-4 pt-8 pb-20">
         <div className="text-center mb-12">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-6"
