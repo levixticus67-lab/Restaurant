@@ -164,10 +164,16 @@ export function IssueGiftCard({ onIssued }: IssueProps) {
   );
 }
 
+interface AppliedCard {
+  id: string;
+  code: string;
+  discount: number;
+}
+
 interface RedeemProps {
   onValidated: (card: GiftCard) => void;
   onRemove: () => void;
-  appliedCard: GiftCard | null;
+  appliedCard: AppliedCard | null;
   orderTotal: number;
 }
 
@@ -193,7 +199,7 @@ export function RedeemGiftCard({ onValidated, onRemove, appliedCard, orderTotal 
   };
 
   if (appliedCard) {
-    const discount = Math.min(appliedCard.balance, orderTotal);
+    const discount = Math.min(appliedCard.discount, orderTotal);
     return (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
         className="flex items-center gap-3 p-3 rounded-xl"

@@ -32,6 +32,10 @@ export interface PlaceOrderPayload {
   items: OrderItem[];
   subtotal: number;
   deliveryFee: number;
+  tip?: number;
+  tax?: number;
+  giftCardCode?: string;
+  giftCardDiscount?: number;
   total: number;
 }
 
